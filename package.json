@@ -4,7 +4,7 @@
   "description": "A Vue.js project",
   "author": "seven.zhong <seven.zhong@vipshop.com>",
   "private": false,
-  "main": "dis/vue-sheet.js",
+  "main": "dist/vue-sheet.js",
   "scripts": {
     "dev": "node build/dev-server.js",
     "build": "node build/build.js",
