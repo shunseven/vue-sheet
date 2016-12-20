@@ -27,7 +27,7 @@
           <sheet-btn v-if = 'rule.type === "button"' :text='filterKey(rule.sources.text,item)' :data='item' :click = 'rule.sources.click' ></sheet-btn>
           <a v-if = "rule.type === 'link'" v-link='filterKey(rule.sources.href,item)'>{{filterKey(rule.sources.text,item)}}</a>
           <sheet-custom v-if = '!defaultType.includes(rule.type)' :data = 'item' :props = 'filterKey(rule.sources,item)'  :Component = 'rule.ChildComponent'></sheet-custom>
-          <sheet-string v-if = 'rule.type === "string"'  :text='filterKey(rule.sources.text,item)'></<sheet-string>
+          <sheet-string v-if = 'rule.type === "string"' :filter = 'rule.sources.filter' :text='filterKey(rule.sources.text,item)'></<sheet-string>
         </td>
        </tr>
       </tbody>

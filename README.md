@@ -1,4 +1,4 @@
-# vue-smart-table
+# vue-sheet
 
 > Vue 表单组件
 
@@ -13,7 +13,7 @@ Basically you write this
       <cell header='性别' type="string" sources='$sex'></cell>
       <cell header='年龄' type='string' sources='$age'></cell>
       <cell header='职业' type='string'  sources='$profession'></cell>
-      <cell header='手机号码' type='string'  sources='$phoneNumber'></cell>
+      <cell header='手机号码' type='btn' class = "btn btn-default"  :sources='{test:"$phoneNumber", click:showPhonNumber }'></cell>
   </sheet>
 </template>
 <script>
@@ -31,7 +31,7 @@ Basically you write this
             age: 26,
             sex: '男',
             profession: 'PHP开发',
-            phoneNumber: "159*****232",
+            phoneNumber: "136*******125",
           },
           {
             name: '李四',
@@ -42,6 +42,11 @@ Basically you write this
           }
         ]
       }
+    },
+    methods () {
+      showPhonNumber (data) {
+        alert(`你的手机号码是${data.phoneNumber}`)
+      }
     }
   }
 </script>
@@ -51,7 +56,9 @@ Basically you write this
 
 你将能看到
 
+![vue smart table](https://s32.postimg.org/55yu3qcb9/Schermata_2016_06_26_alle_02_56_51.png)
 
+[Demo](http://codepen.io/gurghet/pen/qNZprz)
 
 ## Installation
 
