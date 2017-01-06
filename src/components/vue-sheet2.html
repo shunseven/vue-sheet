@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<meta name="robots" content="noindex">
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>JS Bin</title>
+
+<style id="jsbin-css">
+.sheet{
+  border-collapse: collapse;
+}
+.sheet th{
+  color: blue;
+}
+.sheet td, .sheet th{
+  border: 1px solid #ddd;
+  padding: 5px 10px;
+}
+td.name{
+  color: green;
+}
+</style>
+
+</head>
+<body>
+<script src="./vue.js"></script>
+
+<template id="sheet">
+  <table>
+    <caption hidden>
+      <slot></slot>
+    </caption>
+    <thead>
+      <th>ID</th>
+      <th v-for="column in cols">
+        {{ column.header }}
+      </th>
+    </thead>
+    <tbody>
+      <tr v-for="row in records">
+        <td>{{ $index }}</td>
+        <td v-for="column in cols"
+              :$value="row"
+              :is="column.type"
+              :key="column.key"
+              :class="column.class"
+              :style="column.style"
+              :option="column.option"></td>
+      </tr>
+    </tbody>
+  </table>
+</template>
+
+
+<div id="demo">
+  <h1>Sheet</h1>
+  <sheet :records="students" class="sheet">
+    <column header="Name" class="name" key="name"></column>
+    <column header="Age" key="age"></column>
+    <column header="Age" type="link" key="age" :option="{target: '_blank', text: '编辑', path: '/vis/normal/:id', params: {id: '$id'}, queries: {action: 'save'}}"></column>
+    <column header="Name+Age" class="desc" inline-template :option="{click: hello}">
+      Name: {{ $value.name }} <br>
+      Age: {{ $value.age }}
+      <button @click="option.click($value.name)">Hello</button>
+    </column>
+  </sheet>
+</div>
+
+<script id="jsbin-javascript">
+Vue.config.debug = true
+
+Vue.component('sheet', {
+  template: '#sheet',
+
+  props: {
+    records: {
+      type: Array,
+      default: function () {
+        return []
+      }
+    }
+  },
+
+  data: function () {
+    return {
+      cols: []
+    }
+  },
+
+  methods: {
+    addColumn: function (column) {
+      var type = 'cell-' + column.type
+      var option = column.option || {}
+
+      var template = column.$options.template
+      if (template) {
+        if (template.firstChild.tagName !== 'TD') {
+          var td = document.createElement('td')
+          td.className = column.class
+          td.style = column.style
+
+          while(template.childNodes.length) {
+            td.appendChild(template.childNodes[0])
+          }
+          template.appendChild(td)
+        }
+
+        type = 'cell-tmpl-' + Date.now().toString().substr(7)
+        var components = this.$options.components
+        components[type] = Vue.component('cell-tmpl').extend({
+          name: type,
+          template: template
+        })
+      }
+
+      this.cols.push({
+        type: type,
+        header: column.header,
+        class: column.class,
+        style: column.style,
+        key: column.key,
+        option: column.option
+      })
+    }
+  }
+})
+
+Vue.component('column', {
+  props: {
+    type: {
+      type: String,
+      required: false,
+      default: 'text'
+    },
+    key: String,
+    header: String,
+    class: String,
+    style: String,
+    option: {
+      type: Object,
+      required: false,
+      default: function () {
+        return {}
+      }
+    }
+  },
+  created: function () {
+    this.$parent.addColumn(this)
+    if (this.$options.template) this.$options.template = ''
+  }
+})
+
+Vue.component('cell-text', {
+  props: {
+    $value: Object,
+    key: String,
+    class: String,
+    style: String,
+    option: Object
+  },
+  template: '<td :class="class" :style="style">{{ $value[key] }}</td>'
+})
+
+Vue.component('cell-link', {
+  props: {
+    $value: Object,
+    key: String,
+    class: String,
+    style: String,
+    option: Object
+  },
+  template: '<td><a :target="option.target" :class="class" :style="style" :href="href">{{ text }}</a></td>',
+  computed: {
+    text: function () {
+      var text = this.option.text
+      if (text) return text
+
+      var textKey = this.key
+      if (textKey) return this.value[textKey]
+
+      return ''
+    },
+
+    href: function () {
+      var option = this.option
+      var params = option.params
+      var queries = option.queries
+      var href = option.path
+      var value
+
+      for(let p in params) {
+        value = params[p]
+        if (value.startsWith('$')) {
+          value = this.$value[value.slice(1)]
+        }
+        href = href.replace(new RegExp(':' + p + '(?=/|$)', 'g'), value)
+      }
+
+      var urlSearch = []
+      for(let p in queries) {
+        value = queries[p]
+        if (value.startsWith('$')) {
+          value = this.$value[value.slice(1)]
+        }
+        urlSearch.push(p + '=' + encodeURIComponent(value))
+      }
+
+      var connChar = href.indexOf('?') !== -1 ? '&' : '?'
+      href += connChar + urlSearch.join('&')
+
+      return href
+    }
+  }
+})
+
+Vue.component('cell-tmpl', {
+  props: {
+    $value: Object,
+    class: String,
+    style: String,
+    option: Object
+  }
+})
+
+new Vue({
+  el: '#demo',
+  data: {
+    students: [
+      {id: '339', name: 'hal', age: 30},
+      {id: '730', name: 'jim', age: 10},
+      {id: '731', name: 'green', age: 20},
+      {id: '882', name: 'jerry', age: 35}
+    ]
+  },
+  methods: {
+    hello (name) {
+      alert('hello' + name)
+    }
+  }
+})
+</script>
+</body>
+</html>
