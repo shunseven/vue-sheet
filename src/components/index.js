@@ -1,20 +1,20 @@
 import Sheet from './Sheet'
-import Cell from './cell'
+import Column from './Column'
 
 Sheet.install = function (Vue) {
-  Vue.component(Sheet.name, Sheet)
+  Vue.component('Sheet', Sheet)
 }
 
-Cell.install = function (Vue) {
-  Vue.component(Cell.name, Cell)
+Column.install = function (Vue) {
+  Vue.component('Column', Column)
 }
 
 if (typeof window !== 'undefined' && window.Vue) {
-  window.Vue.component(Sheet.name, Sheet)
-  window.vue.component(Cell.name, Cell)
+  window.Vue.component('Sheet', Sheet)
+  window.vue.component('Column', Column)
 }
 
 module.exports = {
   Sheet,
-  Cell
+  Column
 }
